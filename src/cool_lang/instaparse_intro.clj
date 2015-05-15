@@ -3,13 +3,14 @@
 
 (def parser
   (insta/parser
-   "expr = number | vector | operation | exit
+   "expr = number | vector | operation | exit | string
     exit = 'exit'
     operation = operator space+ vector
     operator = '+' | '-' | '*' | '/'
     vector = ((space)* number (space)*)+
     <space> = <#'[\\s\\t\\n\\,]+'>
-    number = #'[0-9]+'"))
+    number = #'[0-9]+'
+    string = #'\".+\"'"))
 
 (defn goaway [op]
   (println "Guess you're not cool...")
@@ -24,15 +25,13 @@
     "/" /))
 
 (def transform-options
-  {
-    :exit goaway
-    :number read-string
-    :vector (comp vec list)
-    :operator choose-operator
-    :operation apply
-    :expr identity
-  }
-)
+  {:exit goaway
+   :number read-string
+   :vector (comp vec list)
+   :operator choose-operator
+   :operation apply
+   :expr identity
+   :string identity})
 
 (defn parse [input]
   (->> (parser input)
