@@ -3,12 +3,18 @@
 
 (def parser
   (insta/parser
-   "expr = number | vector | operation
+   "expr = number | vector | operation | exit
+    exit = 'exit'
     operation = operator space+ vector
     operator = '+' | '-' | '*' | '/'
     vector = ((space)* number (space)*)+
     <space> = <#'[\\s\\t\\n\\,]+'>
     number = #'[0-9]+'"))
+
+(defn goaway [op]
+  (println "Guess you're not cool...")
+  (System/exit 0)
+)
 
 (defn choose-operator [op]
   (case op
@@ -18,22 +24,19 @@
     "/" /))
 
 (def transform-options
-  {:number read-string
-   :vector (comp vec list)
-   :operator choose-operator
-   :operation apply
-   :expr identity})
+  {
+    :exit goaway
+    :number read-string
+    :vector (comp vec list)
+    :operator choose-operator
+    :operation apply
+    :expr identity
+  }
+)
 
 (defn parse [input]
   (->> (parser input)
      (insta/transform transform-options)))
-
-
-;;dfghjkl
-
-
-
-
 
 (defn complete-input? [input]
   (let [lbrackets (count (re-find #"\[" input))
