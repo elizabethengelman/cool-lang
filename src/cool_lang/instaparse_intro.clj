@@ -1,16 +1,17 @@
 (ns cool_lang.instaparse-intro
-  (:require [instaparse.core :as insta]))
+  (:require [clojure.string :as string]
+            [instaparse.core :as insta]))
 
 (def parser
   (insta/parser
    "expr = number | vector | operation | exit | string
     exit = 'exit'
     operation = operator space+ vector
-    operator = '+' | '-' | '*' | '/'
-    vector = ((space)* number (space)*)+
+    operator = '+' | '-' | '*' | '/' | 'S+'
+    vector = ((space)* number (space)*)+ | ((space)* string (space)*)+
     <space> = <#'[\\s\\t\\n\\,]+'>
     number = #'[0-9]+'
-    string = #'\".+\"'"))
+    string = #'\"(.+)\"'"))
 
 (defn goaway [op]
   (println "Guess you're not cool...")
@@ -22,7 +23,8 @@
     "+" +
     "-" -
     "*" *
-    "/" /))
+    "/" /
+    "S+" string/join))
 
 (def transform-options
   {:exit goaway
@@ -50,7 +52,7 @@
     (if (complete-input? new-input)
       new-input
       (do
-        (print "  ..babar> ")
+        (print "  ..cool> ")
         (flush)
         (recur (str new-input "\n"))))))
 
